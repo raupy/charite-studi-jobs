@@ -5,7 +5,7 @@ Kleines R-Script, um die [Stellenbörse der
 Charité](https://www.charite.de/karriere/stellenboerse/) nach Jobs für
 Studierende zu durchforsten, die mit dem zugeordneten Institut,
 Veröffentlichungsdatum und Bewerbungsfrist sowie dem Link zur jeweiligen
-Stellenauschreibung in einem Tibble gesammelt werden.
+Stellenausschreibung in einem Tibble gesammelt werden.
 
 ``` r
 url <- "https://www.charite.de/karriere/stellenboerse/"
