@@ -1,11 +1,11 @@
 Web Scraping mit R
 ================
 
-Kleines R-Script, um die [Stellenbörse der
-Charité](https://www.charite.de/karriere/stellenboerse/) nach Jobs für
-Studierende zu durchforsten, die mit dem zugeordneten Institut,
-Veröffentlichungsdatum und Bewerbungsfrist sowie dem Link zur jeweiligen
-Stellenausschreibung in einem Tibble gesammelt werden.
+Use this R script to search the job board of the
+[Charité](https://www.charite.de/karriere/stellenboerse/), e.g. for
+students by setting . The search results are collected in a tibble with
+the assigned institute, publication date and application deadline as
+well as the link to the respective job posting.
 
 ``` r
 url <- "https://www.charite.de/karriere/stellenboerse/"
@@ -16,7 +16,7 @@ charite_jobs
 ```
 
     ## # A tibble: 18 × 4
-    ##    institut                                    eingestellt bewerbungsfrist url  
+    ##    institute                                   published   deadline        url  
     ##    <chr>                                       <date>      <date>          <chr>
     ##  1 -                                           2022-04-27  2022-05-15      http…
     ##  2 -                                           2022-04-27  2022-05-15      http…
@@ -36,3 +36,13 @@ charite_jobs
     ## 16 Sonstig                                     2022-01-10  2022-06-30      http…
     ## 17 Sonstige Medizinische Klinik für Kardiolog… 2021-07-28  2022-06-30      http…
     ## 18 Sonstige Bibliothek                         2020-11-20  2023-12-31      http…
+
+If the search string is not provided, all jobs vacant at the Charité are
+gathered, which are currently almost 200.
+
+``` r
+get_all_jobs(urls) %>%
+  nrow()
+```
+
+    ## [1] 188

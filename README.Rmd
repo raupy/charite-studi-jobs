@@ -1,0 +1,30 @@
+---
+title: "Web Scraping mit R"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, code = readLines("R/charite-jobs-scraping.R"), echo=FALSE, message = FALSE}
+```
+
+Use this R script to search the job board of the [Charité](https://www.charite.de/karriere/stellenboerse/), e.g. for students by setting `r search_string <- "STUD"`.
+The search results are collected in a tibble with the assigned institute, publication date and application deadline as well as the link to the respective job posting.
+
+```{r}
+url <- "https://www.charite.de/karriere/stellenboerse/"
+search_string <- "STUD"
+urls <- get_sites_to_crawl(url)
+charite_jobs <- get_all_jobs(urls, search_string)
+charite_jobs
+```
+
+If the search string is not provided, all jobs vacant at the Charité are gathered, which are currently almost 200. 
+
+```{r}
+get_all_jobs(urls) %>%
+  nrow()
+```
+

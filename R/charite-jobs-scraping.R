@@ -38,11 +38,11 @@ extract_features <- function(mapped_p_tags, date_regex) {
     map(~ str_remove_all(.x, date_regex)) %>%
     map_chr(~ paste0(.x, collapse = ": "))
 
-  tibble(institut = cleaned_text,
-                           eingestellt = dates[odds],
-                           bewerbungsfrist = dates[-odds]) %>%
-    mutate(institut = ifelse(str_detect(institut, "[a-z]"),
-                             str_remove_all(institut, "-") %>%
+  tibble(institute = cleaned_text,
+                           published = dates[odds],
+                           deadline = dates[-odds]) %>%
+    mutate(institute = ifelse(str_detect(institute, "[a-z]"),
+                             str_remove_all(institute, "-") %>%
                                map_chr(~ str_remove(.x, ":")) %>%
                                map_chr(~ str_sub(.x, end = -3)) %>%
                                map_chr(~ str_trim(.x)),
@@ -64,9 +64,9 @@ find_list_jobs <- function(url, search_string) {
     urls <- paste0("https://www.charite.de", urls)
     mapped_p_tags <- map_p_tags(results, date_regex)
     if (class(mapped_p_tags) == "character") {
-      jobs_tbl <- tibble(institut = html_text,
-                         eingestellt = dmy(NA),
-                         bewerbungsfrist = dmy(NA),
+      jobs_tbl <- tibble(institute = html_text,
+                         published = dmy(NA),
+                         deadline = dmy(NA),
                          url = urls)
     } else {
       jobs_tbl <- mapped_p_tags %>%
@@ -103,7 +103,7 @@ get_sites_to_crawl <- function(url) {
   sites
 }
 
-get_all_jobs <- function(urls, search_string) {
+get_all_jobs <- function(urls, search_string = "") {
   map_dfr(urls, find_list_jobs, search_string)
 }
 
