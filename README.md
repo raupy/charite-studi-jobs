@@ -3,7 +3,7 @@ Web Scraping mit R
 
 Use this R script to search the job board of the
 [Charité](https://www.charite.de/karriere/stellenboerse/), e.g. for
-students by setting . The search results are collected in a tibble with
+students. The search results are collected in a tibble with
 the assigned institute, publication date and application deadline as
 well as the link to the respective job posting.
 
