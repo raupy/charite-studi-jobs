@@ -6,6 +6,7 @@ library(stringr)
 library(purrr)
 library(lubridate)
 library(assertive)
+library(rebus)
 
 
 map_p_tags <- function(links, date_regex) {
@@ -108,7 +109,43 @@ get_all_jobs <- function(urls, search_string = "") {
 }
 
 
+get_job_details <- function(url, search_string = ""){
+  resp <- GET(url)
+  assert_are_set_equal(resp$status_code, 200)
+  job <- read_html(url)
+  job_facts <- job %>%
+    html_nodes("article h2#headline2 ~ p") %>%
+    html_text()
+  job_description <- job %>%
+    html_nodes("article li") %>%
+    html_text()
+  job_details <- tibble(starting_date = job_facts[1],
+                     limited_for = str_extract(job_facts[2],
+                                               pattern =
+                                                 or(one_or_more(DGT) %R%
+                                                      SPACE %R%
+                                                      one_or_more(WRD),
+                                                    DMY)),
+                     hours_per_month = str_extract(job_facts[3],
+                                                   pattern = one_or_more(DGT)) %>% as.numeric(),
+                     contains_search_string = str_detect(job_description,
+                                                         pattern =
+                                                           or(START, one_or_more(SPACE)) %R%
+                                                           search_string %R%
+                                                           or(one_or_more(SPACE), DOT, ",")) %>%
+                       sum() > 0)
+  job_details
+}
+
+get_all_job_details <- function(urls, search_string = "") {
+  map_dfr(urls, get_job_details, search_string)
+}
+
 url <- "https://www.charite.de/karriere/stellenboerse/"
 search_string <- "STUD"
 urls <- get_sites_to_crawl(url)
 charite_jobs <- get_all_jobs(urls, search_string)
+charite_jobs_with_details <- charite_jobs$url %>%
+  get_all_job_details(search_string = "R") %>%
+  cbind(charite_jobs) %>%
+  select(institute, published, deadline, everything())
