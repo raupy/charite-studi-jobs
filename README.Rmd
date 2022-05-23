@@ -1,5 +1,5 @@
 ---
-title: "Web Scraping mit R"
+title: "Web Scraping with R"
 output: github_document
 ---
 
@@ -10,8 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, code = readLines("R/charite-jobs-scraping.R"), echo=FALSE, message = FALSE}
 ```
 
-Use this R script to search the job board of the [Charité](https://www.charite.de/karriere/stellenboerse/), e.g. for students by setting `r search_string <- "STUD"`.
-The search results are collected in a tibble with the assigned institute, publication date and application deadline as well as the link to the respective job posting.
+Use this R script to search the job board of the [Charité](https://www.charite.de/karriere/stellenboerse/), e.g. for students. The search results are collected in a tibble with the assigned institute, publication date and application deadline as well as the link to the respective job posting.
 
 ```{r}
 url <- "https://www.charite.de/karriere/stellenboerse/"
@@ -21,10 +20,24 @@ charite_jobs <- get_all_jobs(urls, search_string)
 charite_jobs
 ```
 
-If the search string is not provided, all jobs vacant at the Charité are gathered, which are currently almost 200. 
+If the search string is not provided, all jobs vacant at the Charité are gathered, which are currently 200.
 
 ```{r}
 get_all_jobs(urls) %>%
   nrow()
+```
+
+You can now take a closer look at the jobs found and scrape them further, for example, to find out the monthly working hours and to search them again for certain words, for example, "R". Currently, about one in five student jobs is somehow related to R!
+
+```{r}
+charite_jobs_with_details <- charite_jobs$url %>%
+  get_all_job_details(search_string = "R") %>%
+  cbind(charite_jobs) %>%
+  select(institute, published, deadline, everything())
+mean(charite_jobs_with_details$contains_search_string)
+```
+
+```{r, echo = FALSE}
+knitr::kable(charite_jobs_with_details, align = "l", format = "simple")
 ```
 
