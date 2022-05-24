@@ -8,6 +8,7 @@ library(lubridate)
 library(assertive)
 library(rebus)
 
+slow_GET <- slowly(~ GET(.), rate = rate_delay(1), quiet = TRUE)
 
 map_p_tags <- function(links, date_regex) {
     p_tags_text <- links %>%
@@ -51,9 +52,9 @@ extract_features <- function(mapped_p_tags, date_regex) {
 }
 
 find_list_jobs <- function(url, search_string) {
-  resp <- GET(url)
+  resp <- slow_GET(url)
   assert_are_set_equal(resp$status_code, 200)
-  html <- read_html(url)
+  html <- content(resp)
   links <- html %>% html_nodes(".list-jobs") %>% html_nodes("li a")
   html_text <- links %>% html_text()
   search_result <- which(str_detect(html_text, search_string))
@@ -79,9 +80,9 @@ find_list_jobs <- function(url, search_string) {
 }
 
 get_sites_to_crawl <- function(url) {
-  resp <- GET(url)
+  resp <- slow_GET(url)
   assert_are_set_equal(resp$status_code, 200)
-  number_of_results_text <- read_html(url) %>%
+  number_of_results_text <- content(resp) %>%
     html_node(".tx-indexedsearch-browsebox") %>%
     html_nodes("p") %>%
     html_text()
@@ -110,9 +111,9 @@ get_all_jobs <- function(urls, search_string = "") {
 
 
 get_job_details <- function(url, search_string = ""){
-  resp <- GET(url)
+  resp <- slow_GET(url)
   assert_are_set_equal(resp$status_code, 200)
-  job <- read_html(url)
+  job <- content(resp)
   job_facts <- job %>%
     html_nodes("article h2#headline2 ~ p") %>%
     html_text()
